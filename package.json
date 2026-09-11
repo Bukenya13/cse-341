@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Bukenya13/cse-341/issues"
   },
-  "homepage": "https://github.com/Bukenya13/cse-341#readme"
+  "homepage": "https://github.com/Bukenya13/cse-341#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
