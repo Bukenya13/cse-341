@@ -1,4 +1,4 @@
-const mongodb = require('../data/database');
+const mongodb = require('../../data/database');
 
 const getData = async (req, res, next) => {
     try {
