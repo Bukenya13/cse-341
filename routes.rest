@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:3000
+@contactId = 6aa531d3a24de4b1501f67af
+
+### Home route
+GET {{baseUrl}}/
+
+### Get all contacts
+GET {{baseUrl}}/contacts
+
+### Get one contact
+GET {{baseUrl}}/contacts/{{contactId}}
