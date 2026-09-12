@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const professionalController = require('../controllers/professional');
+const professionalController = require('../frontend/controllers/professional');
 
 router.get('/', professionalController.getData);
 
