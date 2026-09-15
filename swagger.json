@@ -1,0 +1,325 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Contacts API",
+        "description": "REST API for managing a contacts collection in MongoDB. Supports listing, retrieving, creating, updating, and deleting contacts.",
+        "version": "1.0.0"
+    },
+    "tags": [
+        {
+            "name": "Contacts",
+            "description": "Operations on the contacts collection"
+        },
+        {
+            "name": "Users",
+            "description": "Operations on the users collection"
+        }
+    ],
+    "paths": {
+        "/contacts": {
+            "get": {
+                "tags": ["Contacts"],
+                "operationId": "getContacts",
+                "summary": "Get all contacts",
+                "description": "Returns a list of every contact in the contacts collection.",
+                "responses": {
+                    "200": {
+                        "description": "A list of contacts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Contact"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Contacts"],
+                "operationId": "createContact",
+                "summary": "Create a contact",
+                "description": "Inserts a new contact into the contacts collection.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Contact"
+                            },
+                            "examples": {
+                                "contact": {
+                                    "value": {
+                                        "firstName": "Alice",
+                                        "lastName": "Anderson",
+                                        "email": "alice@example.com",
+                                        "favoriteColor": "blue",
+                                        "birthday": "1990-01-01"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Contact created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "64f1e2d3a5b6c7d8e9f0a1b2"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "All contact fields are required"
+                    }
+                }
+            }
+        },
+        "/contacts/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The id of the contact",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Contacts"],
+                "operationId": "getContactById",
+                "summary": "Get a contact by id",
+                "description": "Returns a single contact matching the given id.",
+                "responses": {
+                    "200": {
+                        "description": "The requested contact",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Contact"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid contact id"
+                    },
+                    "404": {
+                        "description": "Contact not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Contacts"],
+                "operationId": "updateContact",
+                "summary": "Update a contact by id",
+                "description": "Replaces the fields of the contact matching the given id.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Contact"
+                            },
+                            "examples": {
+                                "contact": {
+                                    "value": {
+                                        "firstName": "Alice",
+                                        "lastName": "Anderson",
+                                        "email": "alice.new@example.com",
+                                        "favoriteColor": "teal",
+                                        "birthday": "1990-01-01"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Contact updated"
+                    },
+                    "400": {
+                        "description": "Invalid contact id or missing fields"
+                    },
+                    "404": {
+                        "description": "Contact not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Contacts"],
+                "operationId": "deleteContact",
+                "summary": "Delete a contact by id",
+                "description": "Deletes the contact matching the given id.",
+                "responses": {
+                    "204": {
+                        "description": "Contact deleted"
+                    },
+                    "400": {
+                        "description": "Invalid contact id"
+                    },
+                    "404": {
+                        "description": "Contact not found"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["Users"],
+                "operationId": "getUsers",
+                "summary": "Get all users",
+                "description": "Returns a list of every document in the users collection.",
+                "responses": {
+                    "200": {
+                        "description": "A list of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The id of the user",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Users"],
+                "operationId": "getUserById",
+                "summary": "Get a user by id",
+                "description": "Returns a single user matching the given id.",
+                "responses": {
+                    "200": {
+                        "description": "The requested user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Contact": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email", "favoriteColor", "birthday"],
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "example": "Alice"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Anderson"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "alice@example.com"
+                    },
+                    "favoriteColor": {
+                        "type": "string",
+                        "example": "blue"
+                    },
+                    "birthday": {
+                        "type": "string",
+                        "example": "1990-01-01"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "professionalName": {
+                        "type": "string",
+                        "example": "Nathan Birch"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "example": "Nathan"
+                    },
+                    "primaryDescription": {
+                        "type": "string",
+                        "example": " is a professor at BYU-Idaho"
+                    },
+                    "workDescription1": {
+                        "type": "string",
+                        "example": "He is a full-stack web developer and mobile application developer."
+                    },
+                    "workDescription2": {
+                        "type": "string",
+                        "example": "He teaches lots of programming and web development classes."
+                    },
+                    "linkedInLink": {
+                        "type": "object",
+                        "properties": {
+                            "link": {
+                                "type": "string",
+                                "example": "https://www.linkedin.com/in/nathantbirch/"
+                            },
+                            "text": {
+                                "type": "string",
+                                "example": "LinkedIn"
+                            }
+                        }
+                    },
+                    "githubLink": {
+                        "type": "object",
+                        "properties": {
+                            "link": {
+                                "type": "string",
+                                "example": "https://github.com/nathanbirch"
+                            },
+                            "text": {
+                                "type": "string",
+                                "example": "GitHub"
+                            }
+                        }
+                    },
+                    "contactText": {
+                        "type": "string",
+                        "example": "Feel free to contact him at birchn@byui.edu."
+                    }
+                }
+            }
+        }
+    }
+}

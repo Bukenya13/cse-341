@@ -1,5 +1,8 @@
 @baseUrl = http://localhost:3000
-@contactId = 6aa531d3a24de4b1501f67af
+# To test against your published Render service, replace localhost with your Render URL:
+# @baseUrl = https://your-app.onrender.com
+
+@contactId = 6aa90a1fa794f666559fc83e
 
 ### Home route
 GET {{baseUrl}}/
@@ -7,5 +10,32 @@ GET {{baseUrl}}/
 ### Get all contacts
 GET {{baseUrl}}/contacts
 
-### Get one contact
+### Get one contact by id
 GET {{baseUrl}}/contacts/{{contactId}}
+
+### Create a new contact (all fields required)
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Frank",
+  "lastName": "Fox",
+  "email": "frank@example.com",
+  "favoriteColor": "orange",
+  "birthday": "1995-06-06"
+}
+
+### Update a contact by id
+PUT {{baseUrl}}/contacts/{{contactId}}
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Anderson",
+  "email": "alice.new@example.com",
+  "favoriteColor": "teal",
+  "birthday": "1990-01-01"
+}
+
+### Delete a contact by id
+DELETE {{baseUrl}}/contacts/{{contactId}}

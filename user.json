@@ -3,24 +3,24 @@
     "_id": {
       "$oid": "621fe1f527d68ebb24438395"
     },
-    "professionalName": "Nathan Birch",
+    "professionalName": "Lawrence Bukenya",
     "nameLink": {
-      "firstName": "Nathan",
-      "url": "https://nathanbirch.netlify.app/"
+      "firstName": "Lawrence",
+      "url": "https://github.com/Bukenya13"
     },
-    "firstName": "Nathan",
-    "primaryDescription": " is a professor at BYU-Idaho",
-    "workDescription1": "He is a full-stack web developer and mobile application developer.",
-    "workDescription2": "He teaches lots of programming and web development classes.",
+    "firstName": "Lawrence",
+    "primaryDescription": " is a full-stack web developer and software engineering student",
+    "workDescription1": "He builds full-stack web applications using Node.js, Express, and MongoDB.",
+    "workDescription2": "He is passionate about web services, APIs, and modern web technologies.",
     "linkTitleText": "Check out his work below",
     "linkedInLink": {
-      "link": "https://www.linkedin.com/in/nathantbirch/",
+      "link": "https://www.linkedin.com/in/lawrence-bukenya",
       "text": "LinkedIn"
     },
     "githubLink": {
-      "link": "https://github.com/nathanbirch",
+      "link": "https://github.com/Bukenya13",
       "text": "GitHub"
     },
-    "contactText": "Feel free to contact him at birchn@byui.edu if you'd like for him to work for you!"
+    "contactText": "Feel free to reach out at lawrence.bukenya@example.com to talk about web development!"
   }
 ]

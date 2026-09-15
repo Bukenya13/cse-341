@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "seed": "node scripts/seedContacts.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,8 +21,10 @@
   },
   "homepage": "https://github.com/Bukenya13/cse-341#readme",
   "dependencies": {
+    "codex": "^0.2.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongodb": "^7.6.0"
+    "mongodb": "^7.6.0",
+    "swagger-ui-express": "^4.6.3"
   }
 }
