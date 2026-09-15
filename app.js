@@ -14,7 +14,12 @@ app
         next();
     })
     .use(express.static(path.join(__dirname, 'frontend'), { index: false }))
-    .get('/api-docs', (req, res) => res.redirect('/api-docs/'))
+    .use((req, res, next) => {
+        if (req.path === '/api-docs') {
+            return res.redirect('/api-docs/');
+        }
+        next();
+    })
     .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use('/', require('./routes'))
     .use('/professional', require('./routes/professional'));
