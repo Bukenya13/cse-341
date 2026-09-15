@@ -5,6 +5,16 @@
         "description": "REST API for managing a contacts collection in MongoDB. Supports listing, retrieving, creating, updating, and deleting contacts.",
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Current host (Render or localhost)"
+        },
+        {
+            "url": "https://web-servises-cse-341.onrender.com",
+            "description": "Render deployment"
+        }
+    ],
     "tags": [
         {
             "name": "Contacts",
