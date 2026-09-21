@@ -1,6 +1,7 @@
 const mongodb = require('../data/database');
 const { ObjectId } = require('mongodb');
 const userProfile = require('../user.json');
+const { profilePictureFor } = require('../data/profilePictures');
 
 const sample = [
     { firstName: 'Alice', lastName: 'Anderson', email: 'alice@example.com', favoriteColor: 'blue', birthday: '1990-01-01' },
@@ -11,12 +12,12 @@ const sample = [
 ];
 
 const sampleUsers = [
-    { name: 'Lawrence Bukenya', username: 'lawrencebukenya', email: 'lawrence.bukenya@example.com', ipaddress: '94.121.163.63' },
-    { name: 'Alice Anderson', username: 'alice.anderson', email: 'alice@example.com', ipaddress: '192.168.1.101' },
-    { name: 'Bob Brown', username: 'bob.brown', email: 'bob@example.com', ipaddress: '172.16.0.22' },
-    { name: 'Carol Clark', username: 'carol.clark', email: 'carol@example.com', ipaddress: '10.0.0.15' },
-    { name: 'Dan Davis', username: 'dan.davis', email: 'dan@example.com', ipaddress: '203.0.113.7' }
-];
+    { firstName: 'Lawrence', lastName: 'Bukenya', username: 'lawrencebukenya', email: 'lawrence.bukenya@example.com', phone: '+256-700-123-456', city: 'Kampala', ipaddress: '94.121.163.63' },
+    { firstName: 'Alice', lastName: 'Anderson', username: 'alice.anderson', email: 'alice@example.com', phone: '+1-202-555-0101', city: 'New York', ipaddress: '192.168.1.101' },
+    { firstName: 'Bob', lastName: 'Brown', username: 'bob.brown', email: 'bob@example.com', phone: '+44-20-7946-0958', city: 'London', ipaddress: '172.16.0.22' },
+    { firstName: 'Carol', lastName: 'Clark', username: 'carol.clark', email: 'carol@example.com', phone: '+1-415-555-0132', city: 'San Francisco', ipaddress: '10.0.0.15' },
+    { firstName: 'Dan', lastName: 'Davis', username: 'dan.davis', email: 'dan@example.com', phone: '+256-414-555-011', city: 'Entebbe', ipaddress: '203.0.113.7' }
+].map((user) => ({ ...user, profilePicture: profilePictureFor(user.username) }));
 
 mongodb.initDb(async (err, db) => {
     if (err) {

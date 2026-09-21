@@ -1,18 +1,18 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Contacts API",
-        "description": "REST API for managing a contacts collection in MongoDB. Supports listing, retrieving, creating, updating, and deleting contacts.",
+        "title": "CSE 341 Project 2 API",
+        "description": "REST API performing full CRUD operations on the contacts and users collections in MongoDB. All routes include data validation and error handling, and return proper HTTP status codes.",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "/",
-            "description": "Current host (Render or localhost)"
+            "url": "https://web-servises-cse-341.onrender.com/",
+            "description": "Production (Render)"
         },
         {
-            "url": "https://web-servises-cse-341.onrender.com",
-            "description": "Render deployment"
+            "url": "http://localhost:3000",
+            "description": "Local development"
         }
     ],
     "tags": [
@@ -45,6 +45,9 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             },
@@ -52,7 +55,7 @@
                 "tags": ["Contacts"],
                 "operationId": "createContact",
                 "summary": "Create a contact",
-                "description": "Inserts a new contact into the contacts collection.",
+                "description": "Inserts a new contact into the contacts collection. All fields are required.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -92,7 +95,10 @@
                         }
                     },
                     "400": {
-                        "description": "All contact fields are required"
+                        "description": "Missing required fields or invalid data"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             }
@@ -130,6 +136,9 @@
                     },
                     "404": {
                         "description": "Contact not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             },
@@ -137,7 +146,7 @@
                 "tags": ["Contacts"],
                 "operationId": "updateContact",
                 "summary": "Update a contact by id",
-                "description": "Replaces the fields of the contact matching the given id.",
+                "description": "Replaces the fields of the contact matching the given id. All fields are required.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -168,6 +177,9 @@
                     },
                     "404": {
                         "description": "Contact not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             },
@@ -185,6 +197,9 @@
                     },
                     "404": {
                         "description": "Contact not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             }
@@ -208,6 +223,63 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Users"],
+                "operationId": "createUser",
+                "summary": "Create a user",
+                "description": "Inserts a new user into the users collection. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "firstName": "Alice",
+                                        "lastName": "Anderson",
+                                        "username": "alice.anderson",
+                                        "email": "alice@example.com",
+                                        "phone": "+1-202-555-0101",
+                                        "city": "New York",
+                                        "ipaddress": "192.168.1.101",
+                                        "profilePicture": "https://avatars.tzador.com/face?id=44985295-3d9e-4ca6-b61a-322f86fa9499&size=128"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "64f1e2d3a5b6c7d8e9f0a1b2"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required fields or invalid data"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             }
@@ -240,8 +312,78 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Invalid user id"
+                    },
                     "404": {
                         "description": "User not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Users"],
+                "operationId": "updateUser",
+                "summary": "Update a user by id",
+                "description": "Replaces the fields of the user matching the given id. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "firstName": "Alice",
+                                        "lastName": "Anderson",
+                                        "username": "alice.anderson",
+                                        "email": "alice.new@example.com",
+                                        "phone": "+1-202-555-0102",
+                                        "city": "Brooklyn",
+                                        "ipaddress": "192.168.1.102",
+                                        "profilePicture": "https://avatars.tzador.com/face?id=9801f2c5-500e-40bd-99cf-3fd054e4d4d8&size=128"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "User updated"
+                    },
+                    "400": {
+                        "description": "Invalid user id or missing fields"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Users"],
+                "operationId": "deleteUser",
+                "summary": "Delete a user by id",
+                "description": "Deletes the user matching the given id.",
+                "responses": {
+                    "204": {
+                        "description": "User deleted"
+                    },
+                    "400": {
+                        "description": "Invalid user id"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
                     }
                 }
             }
@@ -263,6 +405,7 @@
                     },
                     "email": {
                         "type": "string",
+                        "format": "email",
                         "example": "alice@example.com"
                     },
                     "favoriteColor": {
@@ -277,56 +420,42 @@
             },
             "User": {
                 "type": "object",
+                "required": ["firstName", "lastName", "username", "email", "phone", "city", "ipaddress"],
                 "properties": {
-                    "professionalName": {
-                        "type": "string",
-                        "example": "Nathan Birch"
-                    },
                     "firstName": {
                         "type": "string",
-                        "example": "Nathan"
+                        "example": "Alice"
                     },
-                    "primaryDescription": {
+                    "lastName": {
                         "type": "string",
-                        "example": " is a professor at BYU-Idaho"
+                        "example": "Anderson"
                     },
-                    "workDescription1": {
+                    "username": {
                         "type": "string",
-                        "example": "He is a full-stack web developer and mobile application developer."
+                        "example": "alice.anderson"
                     },
-                    "workDescription2": {
+                    "email": {
                         "type": "string",
-                        "example": "He teaches lots of programming and web development classes."
+                        "format": "email",
+                        "example": "alice@example.com"
                     },
-                    "linkedInLink": {
-                        "type": "object",
-                        "properties": {
-                            "link": {
-                                "type": "string",
-                                "example": "https://www.linkedin.com/in/nathantbirch/"
-                            },
-                            "text": {
-                                "type": "string",
-                                "example": "LinkedIn"
-                            }
-                        }
-                    },
-                    "githubLink": {
-                        "type": "object",
-                        "properties": {
-                            "link": {
-                                "type": "string",
-                                "example": "https://github.com/nathanbirch"
-                            },
-                            "text": {
-                                "type": "string",
-                                "example": "GitHub"
-                            }
-                        }
-                    },
-                    "contactText": {
+                    "phone": {
                         "type": "string",
-                        "example": "Feel free to contact him at birchn@byui.edu."
+                        "example": "+1-202-555-0101"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "New York"
+                    },
+                    "ipaddress": {
+                        "type": "string",
+                        "example": "192.168.1.101"
+                    },
+                    "profilePicture": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL to the user's profile picture (an African portrait, auto-assigned on create if omitted).",
+                        "example": "https://avatars.tzador.com/face?id=44985295-3d9e-4ca6-b61a-322f86fa9499&size=128"
                     }
                 }
             }

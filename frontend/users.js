@@ -25,13 +25,25 @@ function colorFor(name) {
   return palette[hash % palette.length];
 }
 
+function nameOf(u) {
+  return [u.firstName, u.lastName].filter(Boolean).join(' ').trim() || u.username || '?';
+}
+
 function initialsOf(u) {
-  const name = u.name || u.username || '?';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) {
-    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  const first = (u.firstName || '').trim();
+  const last = (u.lastName || '').trim();
+  if (first && last) {
+    return (first.charAt(0) + last.charAt(0)).toUpperCase();
   }
+  const name = first || u.username || '?';
   return name.slice(0, 2).toUpperCase() || '?';
+}
+
+function avatarOf(u, name) {
+  if (u.profilePicture) {
+    return `<img class="avatar" src="${escapeHtml(u.profilePicture)}" alt="${escapeHtml(name)} profile picture">`;
+  }
+  return `<div class="avatar" style="background:${colorFor(name)}">${escapeHtml(initialsOf(u))}</div>`;
 }
 
 function renderUsers(users) {
@@ -41,12 +53,12 @@ function renderUsers(users) {
     return;
   }
   users.forEach(u => {
-    const color = colorFor(u.name || u.username || u._id);
+    const name = nameOf(u);
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="avatar" style="background:${color}">${escapeHtml(initialsOf(u))}</div>
-      <h2 class="card-title">${escapeHtml(u.name)}</h2>
+      ${avatarOf(u, name)}
+      <h2 class="card-title">${escapeHtml(name)}</h2>
       <span class="card-role">User</span>
       <div class="card-body">
         <p class="card-field"><strong>Username:</strong> ${escapeHtml(u.username)}</p>
@@ -62,7 +74,7 @@ function applyFilter() {
   const term = searchTerm.trim().toLowerCase();
   const visible = term
     ? allUsers.filter(u =>
-        `${u.name} ${u.username} ${u.email}`.toLowerCase().includes(term)
+        `${nameOf(u)} ${u.username} ${u.email}`.toLowerCase().includes(term)
       )
     : allUsers;
   renderUsers(visible);

@@ -150,6 +150,12 @@ h1 {
   box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.6);
 }
 
+img.avatar {
+  display: block;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .card-title {
   margin-top: 44px;
   font-size: 1.3rem;

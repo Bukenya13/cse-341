@@ -3,9 +3,15 @@
 # @baseUrl = https://your-app.onrender.com
 
 @contactId = 6aa90a1fa794f666559fc83e
+@userId = 656cc00e7b8f59f7e2b3a4b5
 
 ### Home route
 GET {{baseUrl}}/
+
+### Swagger docs
+GET {{baseUrl}}/api-docs/
+
+### ------- Contacts -------
 
 ### Get all contacts
 GET {{baseUrl}}/contacts
@@ -39,3 +45,42 @@ Content-Type: application/json
 
 ### Delete a contact by id
 DELETE {{baseUrl}}/contacts/{{contactId}}
+
+### ------- Users -------
+
+### Get all users
+GET {{baseUrl}}/users
+
+### Get one user by id
+GET {{baseUrl}}/users/{{userId}}
+
+### Create a new user (all fields required)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "firstName": "Eve",
+  "lastName": "Evans",
+  "username": "eve.evans",
+  "email": "eve@example.com",
+  "phone": "+1-415-555-0199",
+  "city": "Seattle",
+  "ipaddress": "198.51.100.23"
+}
+
+### Update a user by id
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+  "firstName": "Eve",
+  "lastName": "Evans",
+  "username": "eve.evans",
+  "email": "eve.updated@example.com",
+  "phone": "+1-415-555-0199",
+  "city": "Portland",
+  "ipaddress": "198.51.100.24"
+}
+
+### Delete a user by id
+DELETE {{baseUrl}}/users/{{userId}}

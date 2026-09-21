@@ -22,7 +22,14 @@ app
     })
     .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use('/', require('./routes'))
-    .use('/professional', require('./routes/professional'));
+    .use('/professional', require('./routes/professional'))
+    .use((req, res) => {
+        res.status(404).json({ message: 'Route not found.' });
+    })
+    .use((err, req, res, next) => {
+        console.error(err);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
+    });
 
 mongodb.initDb((err) => {
     if (err) {
