@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "CSE 341 Project 2 API",
-        "description": "REST API performing full CRUD operations on the contacts and users collections in MongoDB. All routes include data validation and error handling, and return proper HTTP status codes.",
+        "description": "REST API performing full CRUD operations on the contacts and users collections in MongoDB. All routes include data validation and error handling, and return proper HTTP status codes. Every POST, PUT, and DELETE route requires an authenticated GitHub session and returns 401 otherwise. To try a protected route in Swagger UI, open /login in a browser and sign in with the same host, then reload this page.",
         "version": "1.0.0"
     },
     "servers": [
@@ -23,9 +23,58 @@
         {
             "name": "Users",
             "description": "Operations on the users collection"
+        },
+        {
+            "name": "Authentication",
+            "description": "GitHub OAuth login and logout"
         }
     ],
     "paths": {
+        "/login": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "githubLogin",
+                "summary": "Log in with GitHub OAuth",
+                "description": "Redirects the user to GitHub to authorize this application.",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to GitHub"
+                    }
+                }
+            }
+        },
+        "/github/callback": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "githubCallback",
+                "summary": "GitHub OAuth callback",
+                "description": "Receives the OAuth authorization code from GitHub and completes authentication.",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to the home page"
+                    },
+                    "401": {
+                        "description": "Authentication failed"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "logout",
+                "summary": "Log out",
+                "description": "Ends the current session and logs the user out.",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to the home page"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
         "/contacts": {
             "get": {
                 "tags": ["Contacts"],
@@ -54,6 +103,7 @@
             "post": {
                 "tags": ["Contacts"],
                 "operationId": "createContact",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Create a contact",
                 "description": "Inserts a new contact into the contacts collection. All fields are required.",
                 "requestBody": {
@@ -96,6 +146,9 @@
                     },
                     "400": {
                         "description": "Missing required fields or invalid data"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
                     },
                     "500": {
                         "description": "An unexpected error occurred"
@@ -145,6 +198,7 @@
             "put": {
                 "tags": ["Contacts"],
                 "operationId": "updateContact",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Update a contact by id",
                 "description": "Replaces the fields of the contact matching the given id. All fields are required.",
                 "requestBody": {
@@ -175,6 +229,9 @@
                     "400": {
                         "description": "Invalid contact id or missing fields"
                     },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
                     "404": {
                         "description": "Contact not found"
                     },
@@ -186,6 +243,7 @@
             "delete": {
                 "tags": ["Contacts"],
                 "operationId": "deleteContact",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Delete a contact by id",
                 "description": "Deletes the contact matching the given id.",
                 "responses": {
@@ -194,6 +252,9 @@
                     },
                     "400": {
                         "description": "Invalid contact id"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
                     },
                     "404": {
                         "description": "Contact not found"
@@ -232,6 +293,7 @@
             "post": {
                 "tags": ["Users"],
                 "operationId": "createUser",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Create a user",
                 "description": "Inserts a new user into the users collection. All fields are required.",
                 "requestBody": {
@@ -277,6 +339,9 @@
                     },
                     "400": {
                         "description": "Missing required fields or invalid data"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
                     },
                     "500": {
                         "description": "An unexpected error occurred"
@@ -326,6 +391,7 @@
             "put": {
                 "tags": ["Users"],
                 "operationId": "updateUser",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Update a user by id",
                 "description": "Replaces the fields of the user matching the given id. All fields are required.",
                 "requestBody": {
@@ -359,6 +425,9 @@
                     "400": {
                         "description": "Invalid user id or missing fields"
                     },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
                     "404": {
                         "description": "User not found"
                     },
@@ -370,6 +439,7 @@
             "delete": {
                 "tags": ["Users"],
                 "operationId": "deleteUser",
+                "security": [{ "githubOAuth": [] }],
                 "summary": "Delete a user by id",
                 "description": "Deletes the user matching the given id.",
                 "responses": {
@@ -378,6 +448,9 @@
                     },
                     "400": {
                         "description": "Invalid user id"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
                     },
                     "404": {
                         "description": "User not found"
@@ -390,6 +463,20 @@
         }
     },
     "components": {
+        "securitySchemes": {
+            "githubOAuth": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://github.com/login/oauth/authorize",
+                        "tokenUrl": "https://github.com/login/oauth/access_token",
+                        "scopes": {
+                            "user:email": "Read access to your email address"
+                        }
+                    }
+                }
+            }
+        },
         "schemas": {
             "Contact": {
                 "type": "object",

@@ -5,6 +5,18 @@
 @contactId = 6aa90a1fa794f666559fc83e
 @userId = 656cc00e7b8f59f7e2b3a4b5
 
+### ------- Authentication -------
+### POST, PUT, and DELETE below require a GitHub session. Open {{baseUrl}}/login
+### in a browser and sign in first, or those requests return 401.
+
+### Log in with GitHub (redirects to GitHub, then back to this app)
+GET {{baseUrl}}/login
+
+### Log out
+GET {{baseUrl}}/logout
+
+### ------- Public routes -------
+
 ### Home route
 GET {{baseUrl}}/
 
@@ -19,7 +31,7 @@ GET {{baseUrl}}/contacts
 ### Get one contact by id
 GET {{baseUrl}}/contacts/{{contactId}}
 
-### Create a new contact (all fields required)
+### Create a new contact (requires login, all fields required)
 POST {{baseUrl}}/contacts
 Content-Type: application/json
 
@@ -54,7 +66,7 @@ GET {{baseUrl}}/users
 ### Get one user by id
 GET {{baseUrl}}/users/{{userId}}
 
-### Create a new user (all fields required)
+### Create a new user (requires login, all fields required)
 POST {{baseUrl}}/users
 Content-Type: application/json
 
