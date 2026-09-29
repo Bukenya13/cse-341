@@ -341,3 +341,28 @@ img {
     animation: none;
   }
 }
+.auth-bar {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#authStatus {
+  font-weight: 600;
+}
+
+#authLink {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+}
+
+#authLink:hover {
+  text-decoration: underline;
+}

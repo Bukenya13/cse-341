@@ -44,6 +44,10 @@ const start = () => {
             }
             next();
         })
+        .get('/whoami', (req, res) => {
+            const user = req.user || req.session?.user;
+            res.status(200).send(user ? `Logged in as ${user.displayName || user.username}` : 'Logged Out');
+        })
         .use('/', require('./routes'))
         .use('/professional', require('./routes/professional'))
         .use((req, res) => {

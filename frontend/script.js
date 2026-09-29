@@ -5,10 +5,30 @@ async function apiFetch(url) {
   return data;
 }
 
+async function apiFetchText(url) {
+  const response = await fetch(url);
+  return response.text();
+}
+
 const getData = async () => {
   const data = await apiFetch('/professional');
   displayAllData(data);
+  displayAuthStatus();
 };
+
+function displayAuthStatus() {
+  apiFetchText('/whoami')
+    .then((text) => {
+      const loggedIn = !text.startsWith('Logged Out');
+      document.getElementById('authStatus').textContent = text;
+      const link = document.getElementById('authLink');
+      link.textContent = loggedIn ? 'Log out' : 'Log in with GitHub';
+      link.href = loggedIn ? '/logout' : '/login';
+    })
+    .catch(() => {
+      document.getElementById('authStatus').textContent = 'Session status unavailable';
+    });
+}
 
 function displayAllData(data) {
   displayProfessionalName(data.professionalName);
