@@ -1,10 +1,13 @@
 # CSE 341 Project 2 - REST API with CRUD Operations
 
-A Node.js REST API that performs full CRUD (Create, Read, Update, Delete) operations against a MongoDB **project2** database with two collections: `contacts` and `users`.
+A Node.js REST API that performs full CRUD (Create, Read, Update, Delete) operations against a MongoDB **project2** database with five collections: `contacts`, `users`, `colleges`, `courses`, and `instructors`.
 
 ## Features
 
-- Full CRUD for two MongoDB collections (`contacts`, `users`)
+- Full CRUD for five MongoDB collections (`contacts`, `users`, `colleges`, `courses`, `instructors`)
+- `courses` reference their `college` via a `collegeId`; `GET /colleges/:id` returns the college with its courses nested
+- `instructors` reference the `course` they teach via a `courseId`
+- Deleting a college cascades and removes its courses
 - Data validation on all POST and PUT routes (returns 400 on invalid payloads)
 - Error handling with try/catch on every route (returns 500 on failures)
 - GitHub OAuth login and logout, with every write route protected (returns 401 when not signed in)
@@ -30,6 +33,13 @@ cp .env.example .env
 
 # 3. (Optional) Seed the database with sample data
 npm run seed
+
+# Seed only some collections (leaves the others untouched)
+npm run seed -- contacts
+npm run seed -- instructors
+
+# Note: `colleges`, `courses`, and `instructors` are always seeded together,
+# because each references the previous and re-seeding regenerates the ids.
 
 # 4. Start the server
 npm start
@@ -81,12 +91,72 @@ Required fields: `firstName`, `lastName`, `username`, `email`, `phone`, `city`, 
 
 Optional field: `profilePicture` — a URL to the user's profile picture. If omitted on `POST`, the API auto-assigns a generated portrait of a Black African via `avatars.tzador.com`; existing records without one get the same treatment in `GET` responses.
 
+### Colleges
+
+| Method | Route              | Description               | Success status |
+| ------ | ------------------ | ------------------------- | -------------- |
+| GET    | `/colleges`        | List all colleges         | 200            |
+| GET    | `/colleges/:id`    | Get one college + courses | 200            |
+| POST   | `/colleges`        | Create a college (auth)   | 201            |
+| PUT    | `/colleges/:id`    | Update a college (auth)   | 204            |
+| DELETE | `/colleges/:id`    | Delete a college (auth)   | 200            |
+
+Required fields (9): `name`, `code`, `email`, `phone`, `city`, `country`, `establishedYear`, `type`, `website`. `type` must be one of `public`, `private`, `community`, `technical`. `establishedYear` is a 4-digit year, `code` is 2-12 letters/numbers/dashes, and `website` must be an http(s) URL.
+
+`GET /colleges/:id` also returns a `courses` array containing every course whose `collegeId` matches. `DELETE /colleges/:id` cascades and deletes those courses too, reporting both counts.
+
+### Courses
+
+| Method | Route              | Description               | Success status |
+| ------ | ------------------ | ------------------------- | -------------- |
+| GET    | `/courses`         | List all courses          | 200            |
+| GET    | `/courses/:id`     | Get one course            | 200            |
+| POST   | `/courses`         | Create a course (auth)    | 201            |
+| PUT    | `/courses/:id`     | Update a course (auth)    | 204            |
+| DELETE | `/courses/:id`     | Delete a course (auth)    | 204            |
+
+Required fields (8): `name`, `code`, `collegeId`, `credits`, `duration`, `level`, `faculty`, `description`. `collegeId` must be the `_id` of an existing college, otherwise `POST`/`PUT` return 400. `level` must be one of `certificate`, `diploma`, `bachelors`, `masters`, `phd`.
+
+### Instructors
+
+| Method | Route                | Description                 | Success status |
+| ------ | -------------------- | --------------------------- | -------------- |
+| GET    | `/instructors`       | List all instructors        | 200            |
+| GET    | `/instructors/:id`   | Get one instructor          | 200            |
+| POST   | `/instructors`       | Create an instructor (auth) | 201            |
+| PUT    | `/instructors/:id`   | Update an instructor (auth) | 204            |
+| DELETE | `/instructors/:id`   | Delete an instructor (auth) | 204            |
+
+Required fields (9): `firstName`, `lastName`, `email`, `phone`, `title`, `courseId`, `faculty`, `office`, `hireDate`. `courseId` must be the `_id` of an existing course, otherwise `POST`/`PUT` return 400. `title` must be one of `professor`, `associate professor`, `senior lecturer`, `lecturer`, `assistant lecturer`, `teaching assistant`. `hireDate` is `YYYY-MM-DD` and `office` accepts letters, numbers, spaces, and dashes.
+
+Get a course's id to post an instructor against it:
+
+```bash
+curl http://localhost:3000/courses | jq -r '.[0]._id'
+```
+
 ### Error responses
 
 - `400` — invalid id or data validation failed
 - `401` — route requires authentication and no GitHub session is present
 - `404` — document not found
 - `500` — unexpected server error
+
+## Checking login status
+
+`GET /` (and `GET /whoami`) return plain text showing the current session:
+
+```
+Logged in as Lawrence Bukenya
+```
+
+or
+
+```
+Logged Out
+```
+
+`GET /api` returns a JSON index of every collection and endpoint.
 
 ## Authentication (GitHub OAuth)
 

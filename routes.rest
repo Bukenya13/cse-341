@@ -4,6 +4,9 @@
 
 @contactId = 6aa90a1fa794f666559fc83e
 @userId = 656cc00e7b8f59f7e2b3a4b5
+@collegeId = 6aa90a1fa794f666559fc83f
+@courseId = 6aa90a1fa794f666559fc840
+@instructorId = 6aa90a1fa794f666559fc841
 
 ### ------- Authentication -------
 ### POST, PUT, and DELETE below require a GitHub session. Open {{baseUrl}}/login
@@ -17,8 +20,14 @@ GET {{baseUrl}}/logout
 
 ### ------- Public routes -------
 
-### Home route
+### Show login status: "Logged in as <name>" or "Logged Out"
 GET {{baseUrl}}/
+
+### Same as the home route
+GET {{baseUrl}}/whoami
+
+### API index listing every collection and endpoint
+GET {{baseUrl}}/api
 
 ### Swagger docs
 GET {{baseUrl}}/api-docs/
@@ -96,3 +105,130 @@ Content-Type: application/json
 
 ### Delete a user by id
 DELETE {{baseUrl}}/users/{{userId}}
+
+### ------- Colleges -------
+
+### Get all colleges
+GET {{baseUrl}}/colleges
+
+### Get one college by id (includes its courses)
+GET {{baseUrl}}/colleges/{{collegeId}}
+
+### Create a new college (requires login, all fields required)
+POST {{baseUrl}}/colleges
+Content-Type: application/json
+
+{
+  "name": "Makerere University",
+  "code": "MAK",
+  "email": "admissions@mak.ac.ug",
+  "phone": "+256-414-422-000",
+  "city": "Kampala",
+  "country": "Uganda",
+  "establishedYear": 1922,
+  "type": "public",
+  "website": "https://www.mak.ac.ug"
+}
+
+### Update a college by id
+PUT {{baseUrl}}/colleges/{{collegeId}}
+Content-Type: application/json
+
+{
+  "name": "Makerere University",
+  "code": "MAK",
+  "email": "admissions.updated@mak.ac.ug",
+  "phone": "+256-414-422-001",
+  "city": "Kampala",
+  "country": "Uganda",
+  "establishedYear": 1922,
+  "type": "public",
+  "website": "https://www.mak.ac.ug"
+}
+
+### Delete a college by id (also deletes its courses)
+DELETE {{baseUrl}}/colleges/{{collegeId}}
+
+### ------- Courses -------
+
+### Get all courses
+GET {{baseUrl}}/courses
+
+### Get one course by id
+GET {{baseUrl}}/courses/{{courseId}}
+
+### Create a new course (requires login, collegeId must be an existing college)
+POST {{baseUrl}}/courses
+Content-Type: application/json
+
+{
+  "name": "Bachelor of Science in Computer Science",
+  "code": "BSCS",
+  "collegeId": "{{collegeId}}",
+  "credits": 120,
+  "duration": 4,
+  "level": "bachelors",
+  "faculty": "Faculty of Technology",
+  "description": "Covers programming, algorithms, databases, and software engineering."
+}
+
+### Update a course by id
+PUT {{baseUrl}}/courses/{{courseId}}
+Content-Type: application/json
+
+{
+  "name": "Bachelor of Science in Computer Science",
+  "code": "BSCS",
+  "collegeId": "{{collegeId}}",
+  "credits": 130,
+  "duration": 4,
+  "level": "bachelors",
+  "faculty": "Faculty of Technology",
+  "description": "Covers programming, algorithms, databases, and software engineering."
+}
+
+### Delete a course by id
+DELETE {{baseUrl}}/courses/{{courseId}}
+
+### ------- Instructors -------
+
+### Get all instructors
+GET {{baseUrl}}/instructors
+
+### Get one instructor by id
+GET {{baseUrl}}/instructors/{{instructorId}}
+
+### Create a new instructor (requires login, courseId must be an existing course)
+POST {{baseUrl}}/instructors
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Nabirye",
+  "email": "g.nabirye@mak.ac.ug",
+  "phone": "+256-414-422-101",
+  "title": "professor",
+  "courseId": "{{courseId}}",
+  "faculty": "Faculty of Technology",
+  "office": "Tech B14",
+  "hireDate": "2009-02-01"
+}
+
+### Update an instructor by id
+PUT {{baseUrl}}/instructors/{{instructorId}}
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Nabirye",
+  "email": "g.nabirye.updated@mak.ac.ug",
+  "phone": "+256-414-422-101",
+  "title": "senior lecturer",
+  "courseId": "{{courseId}}",
+  "faculty": "Faculty of Technology",
+  "office": "Tech B21",
+  "hireDate": "2009-02-01"
+}
+
+### Delete an instructor by id
+DELETE {{baseUrl}}/instructors/{{instructorId}}

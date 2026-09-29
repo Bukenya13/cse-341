@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "CSE 341 Project 2 API",
-        "description": "REST API performing full CRUD operations on the contacts and users collections in MongoDB. All routes include data validation and error handling, and return proper HTTP status codes. Every POST, PUT, and DELETE route requires an authenticated GitHub session and returns 401 otherwise. To try a protected route in Swagger UI, open /login in a browser and sign in with the same host, then reload this page.",
+        "description": "REST API performing full CRUD operations on the contacts, users, colleges, courses, and instructors collections in MongoDB. All routes include data validation and error handling, and return proper HTTP status codes. Every POST, PUT, and DELETE route requires an authenticated GitHub session and returns 401 otherwise. To try a protected route in Swagger UI, open /login in a browser and sign in with the same host, then reload this page.",
         "version": "1.0.0"
     },
     "servers": [
@@ -25,11 +25,44 @@
             "description": "Operations on the users collection"
         },
         {
+            "name": "Colleges",
+            "description": "Operations on the colleges collection"
+        },
+        {
+            "name": "Courses",
+            "description": "Operations on the courses collection"
+        },
+        {
+            "name": "Instructors",
+            "description": "Operations on the instructors collection"
+        },
+        {
             "name": "Authentication",
             "description": "GitHub OAuth login and logout"
         }
     ],
     "paths": {
+        "/": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "getLoginStatus",
+                "summary": "Show login status",
+                "description": "Returns the current session status as plain text: \"Logged in as <displayName>\" when authenticated, otherwise \"Logged Out\".",
+                "responses": {
+                    "200": {
+                        "description": "Current login status",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Logged Out"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "get": {
                 "tags": ["Authentication"],
@@ -460,6 +493,615 @@
                     }
                 }
             }
+        },
+        "/colleges": {
+            "get": {
+                "tags": ["Colleges"],
+                "operationId": "getColleges",
+                "summary": "Get all colleges",
+                "description": "Returns a list of every college in the colleges collection.",
+                "responses": {
+                    "200": {
+                        "description": "A list of colleges",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/College"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Colleges"],
+                "operationId": "createCollege",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Create a college",
+                "description": "Inserts a new college into the colleges collection. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/College"
+                            },
+                            "examples": {
+                                "college": {
+                                    "value": {
+                                        "name": "Makerere University",
+                                        "code": "MAK",
+                                        "email": "admissions@mak.ac.ug",
+                                        "phone": "+256-414-422-000",
+                                        "city": "Kampala",
+                                        "country": "Uganda",
+                                        "establishedYear": 1922,
+                                        "type": "public",
+                                        "website": "https://www.mak.ac.ug"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "College created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "64f1e2d3a5b6c7d8e9f0a1b2"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required fields or invalid data"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
+        "/colleges/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The id of the college",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Colleges"],
+                "operationId": "getCollegeById",
+                "summary": "Get a college by id",
+                "description": "Returns a single college matching the given id, including its courses.",
+                "responses": {
+                    "200": {
+                        "description": "The requested college with its courses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollegeWithCourses"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid college id"
+                    },
+                    "404": {
+                        "description": "College not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Colleges"],
+                "operationId": "updateCollege",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Update a college by id",
+                "description": "Replaces the fields of the college matching the given id. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/College"
+                            },
+                            "examples": {
+                                "college": {
+                                    "value": {
+                                        "name": "Makerere University",
+                                        "code": "MAK",
+                                        "email": "admissions.updated@mak.ac.ug",
+                                        "phone": "+256-414-422-001",
+                                        "city": "Kampala",
+                                        "country": "Uganda",
+                                        "establishedYear": 1922,
+                                        "type": "public",
+                                        "website": "https://www.mak.ac.ug"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "College updated"
+                    },
+                    "400": {
+                        "description": "Invalid college id or missing fields"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "College not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Colleges"],
+                "operationId": "deleteCollege",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Delete a college by id",
+                "description": "Deletes the college matching the given id, along with any courses that reference it.",
+                "responses": {
+                    "200": {
+                        "description": "College and its courses deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "deletedColleges": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "deletedCourses": {
+                                            "type": "integer",
+                                            "example": 2
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid college id"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "College not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
+        "/courses": {
+            "get": {
+                "tags": ["Courses"],
+                "operationId": "getCourses",
+                "summary": "Get all courses",
+                "description": "Returns a list of every course in the courses collection.",
+                "responses": {
+                    "200": {
+                        "description": "A list of courses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Course"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Courses"],
+                "operationId": "createCourse",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Create a course",
+                "description": "Inserts a new course into the courses collection. collegeId must match an existing college.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Course"
+                            },
+                            "examples": {
+                                "course": {
+                                    "value": {
+                                        "name": "Bachelor of Science in Software Engineering",
+                                        "code": "BSSE",
+                                        "collegeId": "64f1e2d3a5b6c7d8e9f0a1b2",
+                                        "credits": 130,
+                                        "duration": 4,
+                                        "level": "bachelors",
+                                        "faculty": "Faculty of Technology",
+                                        "description": "Software architecture, testing, and project management."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Course created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "64f1e2d3a5b6c7d8e9f0a1b3"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required fields, invalid data, or unknown collegeId"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
+        "/courses/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The id of the course",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Courses"],
+                "operationId": "getCourseById",
+                "summary": "Get a course by id",
+                "description": "Returns a single course matching the given id.",
+                "responses": {
+                    "200": {
+                        "description": "The requested course",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Course"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid course id"
+                    },
+                    "404": {
+                        "description": "Course not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Courses"],
+                "operationId": "updateCourse",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Update a course by id",
+                "description": "Replaces the fields of the course matching the given id. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Course"
+                            },
+                            "examples": {
+                                "course": {
+                                    "value": {
+                                        "name": "Bachelor of Science in Software Engineering",
+                                        "code": "BSSE",
+                                        "collegeId": "64f1e2d3a5b6c7d8e9f0a1b2",
+                                        "credits": 135,
+                                        "duration": 4,
+                                        "level": "bachelors",
+                                        "faculty": "Faculty of Technology",
+                                        "description": "Software architecture, testing, and project management."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Course updated"
+                    },
+                    "400": {
+                        "description": "Invalid course id, missing fields, or unknown collegeId"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "Course not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Courses"],
+                "operationId": "deleteCourse",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Delete a course by id",
+                "description": "Deletes the course matching the given id.",
+                "responses": {
+                    "204": {
+                        "description": "Course deleted"
+                    },
+                    "400": {
+                        "description": "Invalid course id"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "Course not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
+        "/instructors": {
+            "get": {
+                "tags": ["Instructors"],
+                "operationId": "getInstructors",
+                "summary": "Get all instructors",
+                "description": "Returns a list of every instructor in the instructors collection.",
+                "responses": {
+                    "200": {
+                        "description": "A list of instructors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Instructor"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Instructors"],
+                "operationId": "createInstructor",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Create an instructor",
+                "description": "Inserts a new instructor into the instructors collection. courseId must match an existing course.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Instructor"
+                            },
+                            "examples": {
+                                "instructor": {
+                                    "value": {
+                                        "firstName": "Grace",
+                                        "lastName": "Nabirye",
+                                        "email": "g.nabirye@mak.ac.ug",
+                                        "phone": "+256-414-422-101",
+                                        "title": "professor",
+                                        "courseId": "64f1e2d3a5b6c7d8e9f0a1b3",
+                                        "faculty": "Faculty of Technology",
+                                        "office": "Tech B14",
+                                        "hireDate": "2009-02-01"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Instructor created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "64f1e2d3a5b6c7d8e9f0a1b4"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required fields, invalid data, or unknown courseId"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
+        },
+        "/instructors/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The id of the instructor",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Instructors"],
+                "operationId": "getInstructorById",
+                "summary": "Get an instructor by id",
+                "description": "Returns a single instructor matching the given id.",
+                "responses": {
+                    "200": {
+                        "description": "The requested instructor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Instructor"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid instructor id"
+                    },
+                    "404": {
+                        "description": "Instructor not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Instructors"],
+                "operationId": "updateInstructor",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Update an instructor by id",
+                "description": "Replaces the fields of the instructor matching the given id. All fields are required.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Instructor"
+                            },
+                            "examples": {
+                                "instructor": {
+                                    "value": {
+                                        "firstName": "Grace",
+                                        "lastName": "Nabirye",
+                                        "email": "g.nabirye.updated@mak.ac.ug",
+                                        "phone": "+256-414-422-101",
+                                        "title": "senior lecturer",
+                                        "courseId": "64f1e2d3a5b6c7d8e9f0a1b3",
+                                        "faculty": "Faculty of Technology",
+                                        "office": "Tech B21",
+                                        "hireDate": "2009-02-01"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Instructor updated"
+                    },
+                    "400": {
+                        "description": "Invalid instructor id, missing fields, or unknown courseId"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "Instructor not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Instructors"],
+                "operationId": "deleteInstructor",
+                "security": [{ "githubOAuth": [] }],
+                "summary": "Delete an instructor by id",
+                "description": "Deletes the instructor matching the given id.",
+                "responses": {
+                    "204": {
+                        "description": "Instructor deleted"
+                    },
+                    "400": {
+                        "description": "Invalid instructor id"
+                    },
+                    "401": {
+                        "description": "Not authenticated; log in with GitHub first"
+                    },
+                    "404": {
+                        "description": "Instructor not found"
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -543,6 +1185,166 @@
                         "format": "uri",
                         "description": "URL to the user's profile picture (an African portrait, auto-assigned on create if omitted).",
                         "example": "https://avatars.tzador.com/face?id=44985295-3d9e-4ca6-b61a-322f86fa9499&size=128"
+                    }
+                }
+            },
+            "College": {
+                "type": "object",
+                "required": ["name", "code", "email", "phone", "city", "country", "establishedYear", "type", "website"],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Makerere University"
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "Short unique code, 2-12 letters, numbers, or dashes.",
+                        "example": "MAK"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "admissions@mak.ac.ug"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+256-414-422-000"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Kampala"
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "Uganda"
+                    },
+                    "establishedYear": {
+                        "type": "integer",
+                        "description": "Four-digit year the college was established.",
+                        "example": 1922
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["public", "private", "community", "technical"],
+                        "example": "public"
+                    },
+                    "website": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://www.mak.ac.ug"
+                    }
+                }
+            },
+            "CollegeWithCourses": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/College"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string",
+                                "example": "64f1e2d3a5b6c7d8e9f0a1b2"
+                            },
+                            "courses": {
+                                "type": "array",
+                                "description": "Courses that reference this college.",
+                                "items": {
+                                    "$ref": "#/components/schemas/Course"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "Course": {
+                "type": "object",
+                "required": ["name", "code", "collegeId", "credits", "duration", "level", "faculty", "description"],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Bachelor of Science in Computer Science"
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "Short unique code, 2-12 letters, numbers, or dashes.",
+                        "example": "BSCS"
+                    },
+                    "collegeId": {
+                        "type": "string",
+                        "description": "The _id of the college that offers this course. Must match an existing college.",
+                        "example": "64f1e2d3a5b6c7d8e9f0a1b2"
+                    },
+                    "credits": {
+                        "type": "integer",
+                        "description": "Total credit hours for the course.",
+                        "example": 120
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "description": "Length of the course in years.",
+                        "example": 4
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": ["certificate", "diploma", "bachelors", "masters", "phd"],
+                        "example": "bachelors"
+                    },
+                    "faculty": {
+                        "type": "string",
+                        "example": "Faculty of Technology"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Covers programming, algorithms, databases, and software engineering."
+                    }
+                }
+            },
+            "Instructor": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email", "phone", "title", "courseId", "faculty", "office", "hireDate"],
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "example": "Grace"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Nabirye"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "g.nabirye@mak.ac.ug"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+256-414-422-101"
+                    },
+                    "title": {
+                        "type": "string",
+                        "enum": ["professor", "associate professor", "senior lecturer", "lecturer", "assistant lecturer", "teaching assistant"],
+                        "example": "professor"
+                    },
+                    "courseId": {
+                        "type": "string",
+                        "description": "The _id of the course this instructor teaches. Must match an existing course.",
+                        "example": "64f1e2d3a5b6c7d8e9f0a1b3"
+                    },
+                    "faculty": {
+                        "type": "string",
+                        "example": "Faculty of Technology"
+                    },
+                    "office": {
+                        "type": "string",
+                        "description": "Office location or room number.",
+                        "example": "Tech B14"
+                    },
+                    "hireDate": {
+                        "type": "string",
+                        "description": "Date the instructor was hired, in YYYY-MM-DD format.",
+                        "example": "2009-02-01"
                     }
                 }
             }
