@@ -14,6 +14,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 const start = () => {
+    const sessionSecret = process.env.SESSION_SECRET || 'insecure-dev-session-secret';
     if (!process.env.SESSION_SECRET) {
         console.error('SESSION_SECRET is not set. Logins will not survive a restart.');
     }
@@ -24,9 +25,12 @@ const start = () => {
         .set('trust proxy', 1)
         .use(
             session({
-                secret: process.env.SESSION_SECRET,
+                secret: sessionSecret,
                 resave: false,
                 saveUninitialized: false,
+                cookie: {
+                    sameSite: 'lax'
+                },
                 store: MongoStore.create({
                     client: mongodb.getDatabase(),
                     collectionName: 'sessions',

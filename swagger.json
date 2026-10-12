@@ -63,6 +63,27 @@
                 }
             }
         },
+        "/whoami": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "getWhoAmI",
+                "summary": "Show login status",
+                "description": "Returns the current session status as plain text.",
+                "responses": {
+                    "200": {
+                        "description": "Current login status",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Logged Out"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "get": {
                 "tags": ["Authentication"],
@@ -80,6 +101,22 @@
             "get": {
                 "tags": ["Authentication"],
                 "operationId": "githubCallback",
+                "summary": "GitHub OAuth callback (legacy path)",
+                "description": "Receives the OAuth authorization code from GitHub and completes authentication.",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to the home page"
+                    },
+                    "401": {
+                        "description": "Authentication failed"
+                    }
+                }
+            }
+        },
+        "/auth/github/callback": {
+            "get": {
+                "tags": ["Authentication"],
+                "operationId": "githubCallbackAuth",
                 "summary": "GitHub OAuth callback",
                 "description": "Receives the OAuth authorization code from GitHub and completes authentication.",
                 "responses": {

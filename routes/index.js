@@ -1,8 +1,17 @@
 const router = require('express').Router();
 
 const loginStatus = (req, res) => {
-    const user = req.user || req.session?.user;
-    res.status(200).send(user ? `Logged in as ${user.displayName || user.username}` : 'Logged Out');
+    const user = req.user || req.session?.passport?.user || req.session?.user;
+    let name = null;
+    if (user) {
+        name =
+            user.displayName ||
+            user.name ||
+            (user._json && (user._json.name || user._json.login)) ||
+            user.username ||
+            user.login;
+    }
+    res.status(200).type('text/plain').send(name ? `Logged in as ${name}` : 'Logged Out');
 };
 
 router.get('/', loginStatus);
